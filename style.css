@@ -1,0 +1,131 @@
+body {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: #333333;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 20px;
+    direction: rtl;
+    text-align: right;
+}
+
+header {
+    background: #ffffff;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h1 {
+    color: #1a365d;
+    margin-bottom: 15px;
+}
+
+/* تنسيق القائمة بمسافات متباعدة وألوان متناسقة */
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    background: #e2e8f0;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #1a365d;
+    font-weight: bold;
+    font-size: 17px;
+    padding: 5px 15px;
+    border-radius: 4px;
+    transition: background 0.3s;
+}
+
+nav a:hover {
+    background: #cbd5e1;
+    color: #0284c7;
+}
+
+main {
+    background: #ffffff;
+    padding: 25px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* توسيط العناوين الرئيسية للصفحات */
+.center-title {
+    text-align: center;
+    color: #1a365d;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+h3 {
+    color: #0f172a;
+    margin-top: 25px;
+}
+
+/* تنسيق الجدول */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+th, td {
+    border: 1px solid #cbd5e1;
+    padding: 12px;
+    text-align: center;
+}
+
+th {
+    background-color: #1e293b;
+    color: #ffffff;
+}
+
+tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+footer {
+    background: #ffffff;
+    text-align: center;
+    padding: 15px;
+    font-size: 14px;
+    color: #64748b;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+#bookingsection {
+    background-color: #cfcfcf;
+    border: 1px solid #e66666;
+    padding: 25px;
+    margin-top: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px #e66666;
+    width: 50%
+}
+
+#bookingform input[type="text"] {
+    width: 25%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    border-radius: 40px;
+    box-sizing: border-box;
+}
+
+#bookingform input[type="submit"] {
+    width: 15%;
+    height: 5%;
+    border: 10px solid #ccc;
+    background-color: #e66666;
+    transition: 0.3s;
+}
