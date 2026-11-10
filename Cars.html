@@ -15,7 +15,7 @@
 
 <div id="nav">
 <a href="home.html">الرئيسية</a>
-<a href="index.html">من نحن</a> <a href="Cars.html" class="active">السيارات</a>
+<a href="AboutUs.html">من نحن</a> <a href="Cars.html" class="active">السيارات</a>
     <a id="exitlink" href="about:blank">خروج</a>
 </div>
 
@@ -61,13 +61,13 @@
             <span style="color:red;">*</span>
         </p>
         <p>
-            <label for="RentSdate">(yyyy-mm-dd : تاريخ بداية التاجير (الزامي - الصيغة</label><br />
+            <label for="RentSdate">(dd-mm-yyyy : تاريخ بداية التاجير (الزامي - الصيغة</label><br />
             <input type="text" id="RentSdate" name="RentSdate" />
             <span style="color:red;">*</span>
 
         </p>
         <p>
-            <label for="RentEdate">(yyyy-mm-dd : تاريخ نهاية التاجير (الزامي - الصيغة</label><br />
+            <label for="RentEdate">(dd-mm-yyyy : تاريخ نهاية التاجير (الزامي - الصيغة</label><br />
             <input type="text" id="RentEdate" name="RentEdate" />
             <span style="color:red;">*</span>
 
@@ -96,8 +96,7 @@
 <script>
 $(document).ready(function ()
 {
-    $(".showdetails").change(function ()
-    {
+    $(".showdetails").change(function () {
         $("#" + this.value).prop("hidden", !this.checked);
 
     $("#continuebtn").click(function ()
@@ -111,29 +110,101 @@ $(document).ready(function ()
         $("#selectmsg").text("");
         $("#bookingsection").show();
     });
-    $("#bookingform").submit(function (event) {
+        $("#bookingform").submit(function (event) {
         event.preventDefault();
         var fullname = $("#Fullname").val();
+        var fullnamePattern = /^[\u0600-\u06FF\s]+$/;
         var Nid = $("#Nid").val().trim();
         var RentSdate = $("#RentSdate").val();
         var RentEdate = $("#RentEdate").val();
         var mobile = $("#mobile").val();
         var nidPattern = /^(0[1-9]|1[0-4])\d{9}$/;
         var mobilePattern = /^(\+963|0)?9\d{8}$/;
-        var datecheckS = new Date(RentSdate);
-        var datecheckE = new Date(RentEdate);
-        if (!nidPattern.test(Nid)) {
-            alert("الرقم الوطني غير صالح. يجب أن يكون 11 خانة ويبدأ برقم بين 01 و 14.");
-            return;
-        }
-        else if  (mobile && !mobilePattern.test(mobile)) {
-            alert("رقم الموبايل غير صالح. يجب أن يكون بصيغة صحيحة.");
-            return;
-        }
-        else if (datecheckS > datecheckE) {
-            alert("تاريخ بداية التاجير يجب أن يكون قبل تاريخ نهاية التاجير.");
-            return;
-        }
+        var datePattern = /^(\d{2})-(\d{2})-(\d{4})$/;
+        var parseDate = function (dateValue) {
+            var parts = dateValue.match(datePattern);
+
+            if (!parts) {
+                return null;
+            }
+
+            var day = Number(parts[1]);
+            var month = Number(parts[2]);
+            var year = Number(parts[3]);
+            var parsedDate = new Date(Date.UTC(year, month - 1, day));
+
+            if (parsedDate.getUTCDate() !== day ||
+                parsedDate.getUTCMonth() !== month - 1 ||
+                parsedDate.getUTCFullYear() !== year) {
+                return null;
+            }
+
+            return parsedDate;
+        };
+        var datecheckS = parseDate(RentSdate);
+        var datecheckE = parseDate(RentEdate);
+            if (!fullnamePattern.test(fullname)) {
+                alert("الاسم الكامل غير صالح. يجب أن يحتوي على أحرف عربية فقط.");
+
+                return;
+            }
+            else if (!nidPattern.test(Nid)) {
+                alert("الرقم الوطني غير صالح. يجب أن يكون 11 خانة ويبدأ برقم بين 01 و 14.");
+                return;
+            }
+            else if (mobile && !mobilePattern.test(mobile)) {
+                alert("رقم الموبايل غير صالح. يجب أن يكون بصيغة صحيحة.");
+                return;
+            }
+            else if (!datecheckS || !datecheckE) {
+                alert("يرجى إدخال التاريخين بالصيغة dd-mm-yyyy.");
+                return;
+            }
+            else if (datecheckS > datecheckE) {
+                alert("تاريخ بداية التاجير يجب أن يكون قبل تاريخ نهاية التاجير.");
+                return;
+            }
+            else {
+                var rentalDays = Math.ceil((datecheckE.getTime() - datecheckS.getTime()) /
+                    (1000 * 60 * 60 * 24));
+
+                if (rentalDays <= 0) {
+                    alert("يجب أن تكون مدة التأجير يومًا واحدًا على الأقل.");
+                    return;
+                }
+
+                var totalBeforeDiscount = 0;
+                $(".pick:checked").each(function () {
+                    totalBeforeDiscount += Number($(this).attr("alt")) * rentalDays;
+                });
+
+                var discount = rentalDays > 7 ? totalBeforeDiscount * 0.10 : 0;
+                var totalAfterDiscount = totalBeforeDiscount - discount;
+                var email = $("#email").val();
+                sessionStorage.setItem("carSelection", JSON.stringify({
+                    fullname: fullname,
+                    nid: Nid,
+                    startDate: RentSdate,
+                    endDate: RentEdate,
+                    mobile: mobile,
+                    email: email,
+                    rentalDays: rentalDays,
+                    cars: $(".pick:checked").map(function () {
+                        var dailyPrice = Number($(this).attr("alt"));
+                        return {
+                            name: $(this).attr("title"),
+                            dailyPrice: dailyPrice,
+                            total: dailyPrice * rentalDays
+                        };
+                    }).get(),
+                    totalBeforeDiscount: totalBeforeDiscount,
+                    discount: discount,
+                    totalAfterDiscount: totalAfterDiscount
+                }));
+
+                window.location.href = "car select.html";
+            }
+        
         });
    });
 });
