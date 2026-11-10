@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <title>السيارات المختارة</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <style>
+        .result-card {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #fff;
+        }
+
+        .customer-info p {
+            margin: 8px 0;
+        }
+
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .result-table th,
+        .result-table td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .total-row {
+            font-weight: bold;
+        }
+
+        .final-total {
+            color: #0a6b2b;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1>مكتب الأمان لتأجير السيارات</h1>
+    </div>
+
+    <div id="content">
+        <div class="result-card">
+            <h2>تفاصيل السيارات المختارة</h2>
+            <div id="resultMessage"></div>
+            <div id="resultContent" hidden="hidden">
+                <div class="customer-info">
+                    <p><strong>الاسم الكامل:</strong> <span id="fullname"></span></p>
+                    <p><strong>الرقم الوطني:</strong> <span id="nid"></span></p>
+                    <p><strong>تاريخ بداية التأجير:</strong> <span id="startDate"></span></p>
+                    <p><strong>تاريخ نهاية التأجير:</strong> <span id="endDate"></span></p>
+                    <p><strong>مدة التأجير:</strong> <span id="rentalDays"></span> يومًا</p>
+                    <p id="mobileRow"><strong>رقم الموبايل:</strong> <span id="mobile"></span></p>
+                    <p id="emailRow"><strong>البريد الإلكتروني:</strong> <span id="email"></span></p>
+                </div>
+
+                <table class="result-table">
+                    <thead>
+                        <tr>
+                            <th>السيارة</th>
+                            <th>السعر اليومي</th>
+                            <th>عدد الأيام</th>
+                            <th>المجموع</th>
+                        </tr>
+                    </thead>
+                    <tbody id="carsList"></tbody>
+                    <tfoot>
+                        <tr class="total-row">
+                            <td colspan="3">المجموع قبل الخصم</td>
+                            <td id="totalBeforeDiscount"></td>
+                        </tr>
+                        <tr class="total-row">
+                            <td colspan="3">الخصم</td>
+                            <td id="discount"></td>
+                        </tr>
+                        <tr class="total-row final-total">
+                            <td colspan="3">المبلغ الإجمالي بعد الخصم</td>
+                            <td id="totalAfterDiscount"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <p><a href="Cars.html">العودة إلى صفحة السيارات</a></p>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var storedSelection = sessionStorage.getItem("carSelection");
+            var resultMessage = document.getElementById("resultMessage");
+            var resultContent = document.getElementById("resultContent");
+
+            if (!storedSelection) {
+                resultMessage.textContent = "لا توجد بيانات اختيار محفوظة.";
+                return;
+            }
+
+            var selection = JSON.parse(storedSelection);
+            var formatCurrency = function (value) {
+                return Number(value).toLocaleString("ar-SY") + " ل.س";
+            };
+            var setText = function (id, value) {
+                document.getElementById(id).textContent = value;
+            };
+
+            setText("fullname", selection.fullname);
+            setText("nid", selection.nid);
+            setText("startDate", selection.startDate);
+            setText("endDate", selection.endDate);
+            setText("rentalDays", selection.rentalDays);
+
+            if (selection.mobile) {
+                setText("mobile", selection.mobile);
+            } else {
+                document.getElementById("mobileRow").hidden = true;
+            }
+
+            if (selection.email) {
+                setText("email", selection.email);
+            } else {
+                document.getElementById("emailRow").hidden = true;
+            }
+
+            var carsList = document.getElementById("carsList");
+            selection.cars.forEach(function (car) {
+                var row = document.createElement("tr");
+                [car.name, formatCurrency(car.dailyPrice), selection.rentalDays, formatCurrency(car.total)]
+                    .forEach(function (value) {
+                        var cell = document.createElement("td");
+                        cell.textContent = value;
+                        row.appendChild(cell);
+                    });
+                carsList.appendChild(row);
+            });
+
+            setText("totalBeforeDiscount", formatCurrency(selection.totalBeforeDiscount));
+            setText("discount", formatCurrency(selection.discount));
+            setText("totalAfterDiscount", formatCurrency(selection.totalAfterDiscount));
+            resultContent.hidden = false;
+        }());
+    </script>
+</body>
+</html>
