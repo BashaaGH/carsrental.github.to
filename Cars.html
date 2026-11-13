@@ -13,11 +13,12 @@
   <h1>مكتب الأمان لتأجير السيارات</h1>
 </div>
 
-<div id="nav">
-<a href="home.html">الرئيسية</a>
-<a href="AboutUs.html">من نحن</a> <a href="Cars.html" class="active">السيارات</a>
+<nav>
+    <a href="home.html">الرئيسية</a>
+    <a href="AboutUs.html">من نحن</a>
+    <a href="Cars.html" class="active">السيارات</a>
     <a id="exitlink" href="about:blank">خروج</a>
-</div>
+</nav>
 
 <div id="content">
     <h2>السيارات المتوفرة</h2>
@@ -52,23 +53,23 @@
     <form id="bookingform" action="#" method="post">
         <p>
             <label for="Fullname">( الاسم الكامل ( الزامي -احرف عربية فقط</label> <br />
-            <input type="text" id="Fullname" name="fullname" />
+            <input type="text" id="Fullname" name="fullname" required inputmode="text" autocomplete="name" />
             <span style="color:red;">*</span>
         </p>
         <p>
             <label for="Nid">( الرقم الوطني ( 11 خانة - الزامي</label><br />
-            <input type="text" id="Nid" name="Nid" />
+            <input type="text" id="Nid" name="Nid" required inputmode="numeric" maxlength="14" autocomplete="off" />
             <span style="color:red;">*</span>
         </p>
         <p>
             <label for="RentSdate">(dd-mm-yyyy : تاريخ بداية التاجير (الزامي - الصيغة</label><br />
-            <input type="text" id="RentSdate" name="RentSdate" />
+            <input type="text" id="RentSdate" name="RentSdate" required inputmode="numeric" maxlength="10" placeholder="dd-mm-yyyy" autocomplete="off" />
             <span style="color:red;">*</span>
 
         </p>
         <p>
             <label for="RentEdate">(dd-mm-yyyy : تاريخ نهاية التاجير (الزامي - الصيغة</label><br />
-            <input type="text" id="RentEdate" name="RentEdate" />
+            <input type="text" id="RentEdate" name="RentEdate" required inputmode="numeric" maxlength="10" placeholder="dd-mm-yyyy" autocomplete="off" />
             <span style="color:red;">*</span>
 
         </p>
@@ -96,6 +97,28 @@
 <script>
 $(document).ready(function ()
 {
+    $("#Fullname").on("input", function () {
+        this.value = this.value.replace(/[^\u0621-\u064A\s]/g, "");
+    });
+
+    $("#Nid").on("input", function () {
+        this.value = this.value.replace(/\D/g, "").slice(0, 11);
+    });
+
+    $("#RentSdate, #RentEdate").on("input", function () {
+        var digits = this.value.replace(/\D/g, "").slice(0, 8);
+        var formattedDate = digits;
+
+        if (digits.length > 2) {
+            formattedDate = digits.slice(0, 2) + "-" + digits.slice(2);
+        }
+        if (digits.length > 4) {
+            formattedDate = digits.slice(0, 2) + "-" + digits.slice(2, 4) + "-" + digits.slice(4);
+        }
+
+        this.value = formattedDate;
+    });
+
     $(".showdetails").change(function () {
         $("#" + this.value).prop("hidden", !this.checked);
 
@@ -113,7 +136,7 @@ $(document).ready(function ()
         $("#bookingform").submit(function (event) {
         event.preventDefault();
         var fullname = $("#Fullname").val();
-        var fullnamePattern = /^[\u0600-\u06FF\s]+$/;
+        var fullnamePattern = /^[\u0621-\u064A\s]+$/;
         var Nid = $("#Nid").val().trim();
         var RentSdate = $("#RentSdate").val();
         var RentEdate = $("#RentEdate").val();
